@@ -1,12 +1,98 @@
 import { TreeItem, TreeView } from "@mui/x-tree-view";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { finale } from "../types";
+import { useFormspark } from "@formspark/use-formspark";
+
+const FORMSPARK_FORM_ID = "OTmA8IIq7";
 
 interface finaleProps {
   finale: finale;
 }
 
+
 function LessonsTree({ finale }: finaleProps) {
+  const [submit, submitting] = useFormspark({
+    formId: FORMSPARK_FORM_ID,
+  });
+
+  const formData = {
+    sex: finale.lesson_0.sex,
+    birth: finale.lesson_0.birth,
+    dalt: finale.lesson_0.dalt,
+    adhd: finale.lesson_0.adhd,
+    tired: finale.lesson_0.tired,
+    dys: finale.lesson_0.dys,
+    eye: finale.lesson_0.eye,
+    clause: finale.lesson_0.clause,
+    lesson_1_time: finale.lesson_1.time,
+    lesson_1_falseTry: finale.lesson_1.falseTry,
+    lesson_1_isFind: finale.lesson_1.isFind,
+    lesson_2_time: finale.lesson_2.time,
+    lesson_2_falseTry: finale.lesson_2.falseTry,
+    lesson_2_isFind: finale.lesson_2.isFind,
+    lesson_3_duration: finale.lesson_3.duration,
+    lesson_3_tones: finale.lesson_3.tones,
+    lesson_4_time: finale.lesson_4.time,
+    lesson_4_second: finale.lesson_4.second,
+    lesson_5_time: finale.lesson_5.time,
+    lesson_5_second: finale.lesson_5.second,
+    lesson_5_zoom: finale.lesson_5.zoom,
+    lesson_5_position: finale.lesson_5.position,
+    lesson_6_time: finale.lesson_6.time,
+    lesson_6_second: finale.lesson_6.second,
+    lesson_7_time: finale.lesson_7.time,
+    lesson_7_second: finale.lesson_7.second,
+    lesson_7_zoom: finale.lesson_7.zoom,
+    lesson_7_position: finale.lesson_7.position,
+    lesson_8_isCorrect: finale.lesson_8.isCorrect,
+    lesson_8_falseTry: finale.lesson_8.falseTry,
+    lesson_8_time: finale.lesson_8.time,
+    lesson_9_isCorrect: finale.lesson_9.isCorrect,
+    lesson_9_falseTry: finale.lesson_9.falseTry,
+    lesson_9_time: finale.lesson_9.time,
+    lesson_10_selected: finale.lesson_10.selected
+  };
+
+  const sendToFormspark = async () => {
+    try {
+      const response = await fetch('https://submit-form.com/OTmA8IIq7', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      console.log('Data sent successfully');
+    } catch (error) {
+      console.error('Error sending data:', error);
+    }
+    console.log("Wysyłanie trwa formspark");
+    
+  };
+
+  // useEffect(() => {
+  //   if (!dataSent) {
+  //     sendToFormspark();
+  //     console.log("Wysyłanie trwa");
+  //     setDataSent(true);
+  //     alert("alert");
+  //   }
+  // }, [dataSent]);
+
+  const operationDoneRef = useRef(false);
+
+  useEffect(() => {
+    if (!operationDoneRef.current) {
+      console.log("Operacja wykonuje się.");
+      sendToFormspark();
+      operationDoneRef.current = true; 
+    }
+  }, []);
+
   return (
     <TreeView
       sx={{
@@ -27,8 +113,9 @@ function LessonsTree({ finale }: finaleProps) {
         maxHeight: "580px",
         overflowY: "auto",
       }}
-      expanded={['0','1','2','3','4','5','6','7','8','9','10']}
+      expanded={["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
     >
+      
       <TreeItem nodeId="0" label="Lesson 0">
         <TreeItem nodeId="0-1" label={`Płeć: ${finale.lesson_0.sex}`} />
         <TreeItem
@@ -145,3 +232,5 @@ function LessonsTree({ finale }: finaleProps) {
 }
 
 export default LessonsTree;
+
+
